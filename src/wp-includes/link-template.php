@@ -1595,27 +1595,43 @@ function get_delete_post_link( $post = 0, $deprecated = '', $force_delete = fals
  * Retrieves the edit comment link.
  *
  * @since 2.3.0
- *
+ * @since 6.7.0 The $context parameter was added.
+ * 
  * @param int|WP_Comment $comment_id Optional. Comment ID or WP_Comment object.
- * @return string|void The edit comment link URL for the given comment.
+ * @param string         $context    Optional. How to output the '&' character. Default '&amp;'.
+ * @return string|void The edit comment link URL for the given comment id. Null if the comment id does not exist
+ *                     or does not allow an editing UI.
  */
-function get_edit_comment_link( $comment_id = 0 ) {
+function get_edit_comment_link( $comment_id = 0, $context = 'display' ) {
 	$comment = get_comment( $comment_id );
+
+	if ( ! ( is_object( $comment ) && property_exists( $comment, 'comment_ID' ) ) ) {
+		return null;
+	}
 
 	if ( ! current_user_can( 'edit_comment', $comment->comment_ID ) ) {
 		return;
 	}
 
-	$location = admin_url( 'comment.php?action=editcomment&amp;c=' ) . $comment->comment_ID;
+	if ( 'display' === $context ) {
+		$action = 'comment.php?action=editcomment&amp;c=';
+	} else {
+		$action = 'comment.php?action=editcomment&c=';
+	}
+
+	$location = admin_url( $action ) . $comment->comment_ID;
 
 	/**
 	 * Filters the comment edit link.
 	 *
 	 * @since 2.3.0
+	 * @since 6.7.0 The $comment_id and $context parameters are now being passed to the filter.
 	 *
 	 * @param string $location The edit link.
+	 * @param int    $comment_id Optional. Unique ID of the comment to generate an edit link.
+	 * @param int    $context    Optional. Context to include HTML entities in link. Default 'display'.
 	 */
-	return apply_filters( 'get_edit_comment_link', $location );
+	return apply_filters( 'get_edit_comment_link', $location, $comment_id, $context );
 }
 
 /**
