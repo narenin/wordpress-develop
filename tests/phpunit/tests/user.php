@@ -1164,19 +1164,27 @@ class Tests_User extends WP_UnitTestCase {
 		wp_set_current_user( $user->ID );
 		wp_set_auth_cookie( $user->ID, $remember, '', $token );
 
+		$cookie   = $_COOKIE[ AUTH_COOKIE ];
 		$userdata = array(
 			'ID'        => $user->ID,
 			'user_pass' => 'my_new_password',
 		);
 		$updated = wp_update_user( $userdata, $manager );
-		$valid   = wp_validate_auth_cookie();
-		$cookie  = wp_parse_auth_cookie();
+		$parsed  = wp_parse_auth_cookie();
 
+		// Check the prerequisites:
 		$this->assertNotWPError( $updated );
 		$this->assertNotSame( $pass, get_userdata( $user->ID )->user_pass );
-		$this->assertSame( $user->ID, $valid );
-		$this->assertSame( $token, $cookie['token'] );
+
+		// Check the session token:
+		$this->assertSame( $token, $parsed['token'] );
 		$this->assertCount( 1, $manager->get_all() );
+
+		// Check that the newly set auth cookie is valid:
+		$this->assertSame( $user->ID, wp_validate_auth_cookie() );
+
+		// Check that, despite the session token reuse, the old auth cookie should now be invalid because the password changed:
+		$this->assertFalse( wp_validate_auth_cookie( $cookie ) );
 	}
 
 	public function data_remember_user() {
