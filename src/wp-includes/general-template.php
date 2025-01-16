@@ -1299,7 +1299,6 @@ function wp_get_document_title() {
 /**
  * Displays title tag with content.
  *
- * @ignore
  * @since 4.1.0
  * @since 4.4.0 Improved title output replaced `wp_title()`.
  * @access private
@@ -2374,7 +2373,7 @@ function get_calendar( $initial = true, $display = true ) {
 	}
 
 	// See how much we should pad in the beginning.
-	$pad = calendar_week_mod( gmdate( 'w', $unixmonth ) - $week_begins );
+	$pad = calendar_week_mod( (int) gmdate( 'w', $unixmonth ) - $week_begins );
 	if ( 0 != $pad ) {
 		$calendar_output .= "\n\t\t" . '<td colspan="' . esc_attr( $pad ) . '" class="pad">&nbsp;</td>';
 	}
@@ -2413,12 +2412,12 @@ function get_calendar( $initial = true, $display = true ) {
 
 		$calendar_output .= '</td>';
 
-		if ( 6 == calendar_week_mod( gmdate( 'w', mktime( 0, 0, 0, $thismonth, $day, $thisyear ) ) - $week_begins ) ) {
+		if ( 6 == calendar_week_mod( (int) gmdate( 'w', mktime( 0, 0, 0, $thismonth, $day, $thisyear ) ) - $week_begins ) ) {
 			$newrow = true;
 		}
 	}
 
-	$pad = 7 - calendar_week_mod( gmdate( 'w', mktime( 0, 0, 0, $thismonth, $day, $thisyear ) ) - $week_begins );
+	$pad = 7 - calendar_week_mod( (int) gmdate( 'w', mktime( 0, 0, 0, $thismonth, $day, $thisyear ) ) - $week_begins );
 	if ( 0 != $pad && 7 != $pad ) {
 		$calendar_output .= "\n\t\t" . '<td class="pad" colspan="' . esc_attr( $pad ) . '">&nbsp;</td>';
 	}
@@ -3121,6 +3120,15 @@ function feed_links( $args = array() ) {
 	$args = wp_parse_args( $args, $defaults );
 
 	/**
+	 * Filters the feed links arguments.
+	 *
+	 * @since 6.7.0
+	 *
+	 * @param array $args An array of feed links arguments.
+	 */
+	$args = apply_filters( 'feed_links_args', $args );
+
+	/**
 	 * Filters whether to display the posts feed link.
 	 *
 	 * @since 4.4.0
@@ -3181,6 +3189,15 @@ function feed_links_extra( $args = array() ) {
 	);
 
 	$args = wp_parse_args( $args, $defaults );
+
+	/**
+	 * Filters the extra feed links arguments.
+	 *
+	 * @since 6.7.0
+	 *
+	 * @param array $args An array of extra feed links arguments.
+	 */
+	$args = apply_filters( 'feed_links_extra_args', $args );
 
 	if ( is_singular() ) {
 		$id   = 0;
@@ -4562,7 +4579,7 @@ function paginate_links( $args = '' ) {
 	$dots       = false;
 
 	if ( $args['prev_next'] && $current && 1 < $current ) :
-		$link = str_replace( '%_%', 2 == $current ? '' : $args['format'], $args['base'] );
+		$link = str_replace( '%_%', 2 === $current ? '' : $args['format'], $args['base'] );
 		$link = str_replace( '%#%', $current - 1, $link );
 		if ( $add_args ) {
 			$link = add_query_arg( $add_args, $link );
@@ -4584,7 +4601,7 @@ function paginate_links( $args = '' ) {
 	endif;
 
 	for ( $n = 1; $n <= $total; $n++ ) :
-		if ( $n == $current ) :
+		if ( $n === $current ) :
 			$page_links[] = sprintf(
 				'<span aria-current="%s" class="page-numbers current">%s</span>',
 				esc_attr( $args['aria_current'] ),
@@ -4594,7 +4611,7 @@ function paginate_links( $args = '' ) {
 			$dots = true;
 		else :
 			if ( $args['show_all'] || ( $n <= $end_size || ( $current && $n >= $current - $mid_size && $n <= $current + $mid_size ) || $n > $total - $end_size ) ) :
-				$link = str_replace( '%_%', 1 == $n ? '' : $args['format'], $args['base'] );
+				$link = str_replace( '%_%', 1 === $n ? '' : $args['format'], $args['base'] );
 				$link = str_replace( '%#%', $n, $link );
 				if ( $add_args ) {
 					$link = add_query_arg( $add_args, $link );
@@ -4745,7 +4762,7 @@ function register_admin_color_schemes() {
 		'modern',
 		_x( 'Modern', 'admin color scheme' ),
 		admin_url( "css/colors/modern/colors$suffix.css" ),
-		array( '#1e1e1e', '#3858e9', '#33f078' ),
+		array( '#1e1e1e', '#3858e9', '#7b90ff' ),
 		array(
 			'base'    => '#f3f1f1',
 			'focus'   => '#fff',
