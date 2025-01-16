@@ -63,11 +63,12 @@ class Tests_User extends WP_UnitTestCase {
 	public function set_up() {
 		parent::set_up();
 
-		add_action( 'set_auth_cookie',      array( $this, 'action_set_auth_cookie' ), 10, 6 );
+		add_action( 'set_auth_cookie', array( $this, 'action_set_auth_cookie' ), 10, 6 );
 		add_action( 'set_logged_in_cookie', array( $this, 'action_set_logged_in_cookie' ), 10 );
-		add_action( 'clear_auth_cookie',    array( $this, 'action_clear_auth_cookie' ) );
+		add_action( 'clear_auth_cookie', array( $this, 'action_clear_auth_cookie' ) );
 
-		$_COOKIE = [];
+		$_COOKIE = array();
+
 		$this->author = clone self::$_author;
 	}
 
