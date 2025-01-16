@@ -81,7 +81,7 @@ class Tests_User extends WP_UnitTestCase {
 		string $token
 	): void {
 		$_COOKIE[ SECURE_AUTH_COOKIE ] = $cookie;
-		$_COOKIE[ AUTH_COOKIE ] = $cookie;
+		$_COOKIE[ AUTH_COOKIE ]        = $cookie;
 	}
 
 	final public function action_set_logged_in_cookie( string $cookie ): void {
@@ -1169,8 +1169,8 @@ class Tests_User extends WP_UnitTestCase {
 			'ID'        => $user->ID,
 			'user_pass' => 'my_new_password',
 		);
-		$updated = wp_update_user( $userdata, $manager );
-		$parsed  = wp_parse_auth_cookie();
+		$updated  = wp_update_user( $userdata, $manager );
+		$parsed   = wp_parse_auth_cookie();
 
 		// Check the prerequisites:
 		$this->assertNotWPError( $updated );
