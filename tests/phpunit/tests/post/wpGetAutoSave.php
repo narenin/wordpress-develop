@@ -79,7 +79,7 @@ class Tests_Post_wpGetPostAutosave extends WP_UnitTestCase {
 	 * @ticket 62658
 	 */
 	public function test_autosave_for_specific_user() {
-		$autosave_id = wp_insert_post(
+		$autosave_id = $this->factory()>post->create(
 			array(
 				'post_type'    => 'revision',
 				'post_status'  => 'inherit',
